@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/go-playground/validator"
 	"github.com/google/go-querystring/query"
 	"github.com/jfk9w-go/based"
 	"github.com/pkg/errors"
@@ -16,23 +17,32 @@ import (
 const baseURL = "https://rucaptcha.com"
 
 type Config struct {
-	Key                      string `url:"key"`
-	AccessControlAllowOrigin bool   `url:"header_acao,omitempty"`
-	Pingback                 string `url:"pingback,omitempty"`
-	UserAgent                string `url:"userAgent,omitempty"`
-	Proxy                    string `url:"proxy,omitempty"`
-	ProxyType                string `url:"proxytype,omitempty"`
-	SoftID                   int    `url:"soft_id,omitempty"`
+	Key      string `url:"key" validate:"required"`
+	Pingback string `url:"pingback,omitempty"`
+	SoftID   int    `url:"soft_id,omitempty"`
 }
 
-type Client struct {
-	httpClient *http.Client
-	answerer   answerer
-	options    url.Values
+var validate = based.Lazy[*validator.Validate]{
+	Fn: func(ctx context.Context) (*validator.Validate, error) {
+		return validator.New(), nil
+	},
 }
 
-func NewClientWithTransport(clock based.Clock, transport http.RoundTripper, config *Config) (*Client, error) {
-	options, err := query.Values(config)
+type ClientBuilder struct {
+	Config Config      `validate:"required"`
+	Clock  based.Clock `validate:"required_with=Config.Pingback"`
+
+	Transport http.RoundTripper
+}
+
+func (b ClientBuilder) Build(ctx context.Context) (*Client, error) {
+	if validate, err := validate.Get(ctx); err != nil {
+		return nil, err
+	} else if err := validate.Struct(b); err != nil {
+		return nil, err
+	}
+
+	options, err := query.Values(b.Config)
 	if err != nil {
 		return nil, errors.Wrap(err, "encode options")
 	}
@@ -41,22 +51,24 @@ func NewClientWithTransport(clock based.Clock, transport http.RoundTripper, conf
 
 	client := &Client{
 		httpClient: &http.Client{
-			Transport: transport,
+			Transport: b.Transport,
 		},
 		options: options,
 	}
 
-	if config.Pingback == "" {
+	if b.Config.Pingback == "" {
 		client.answerer = &answerPoller{client}
 	} else {
-		client.answerer = newAsyncListener(clock)
+		client.answerer = newAsyncListener(b.Clock)
 	}
 
 	return client, nil
 }
 
-func NewClient(clock based.Clock, config *Config) (*Client, error) {
-	return NewClientWithTransport(clock, http.DefaultTransport, config)
+type Client struct {
+	httpClient *http.Client
+	answerer   answerer
+	options    url.Values
 }
 
 func (c *Client) HTTPHandler() http.Handler {
@@ -68,6 +80,12 @@ func (c *Client) HTTPHandler() http.Handler {
 }
 
 func (c *Client) Solve(ctx context.Context, in SolveIn) (*SolveOut, error) {
+	if validate, err := validate.Get(ctx); err != nil {
+		return nil, err
+	} else if err := validate.Struct(in); err != nil {
+		return nil, err
+	}
+
 	values, err := query.Values(in)
 	if err != nil {
 		return nil, errors.Wrap(err, "encode solve values")

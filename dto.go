@@ -12,8 +12,12 @@ type SolveOut struct {
 }
 
 type YandexSmartCaptchaIn struct {
-	SiteKey string `url:"sitekey"`
-	PageURL string `url:"pageurl"`
+	SiteKey                  string `url:"sitekey" validate:"required"`
+	PageURL                  string `url:"pageurl" validate:"required"`
+	AccessControlAllowOrigin bool   `url:"header_acao,omitempty"`
+	UserAgent                string `url:"userAgent,omitempty"`
+	Proxy                    string `url:"proxy,omitempty"`
+	ProxyType                string `url:"proxytype,omitempty"`
 }
 
 func (in *YandexSmartCaptchaIn) Method() string {

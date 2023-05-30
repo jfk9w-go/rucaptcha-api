@@ -2,41 +2,40 @@ package rucaptcha_test
 
 import (
 	"context"
-	"os"
 	"testing"
 
-	"github.com/jfk9w-go/based"
+	"github.com/caarlos0/env"
 	"github.com/jfk9w-go/rucaptcha-api"
-
 	"github.com/stretchr/testify/require"
 )
 
 func TestClient_Solve_Yandex(t *testing.T) {
-	key := os.Getenv("KEY")
-	siteKey := os.Getenv("SITE_KEY")
-	pageURL := os.Getenv("PAGE_URL")
+	var config struct {
+		Key     string `env:"KEY,required"`
+		SiteKey string `env:"SITE_KEY,required"`
+		PageURL string `env:"PAGE_URL,required"`
+	}
 
-	if key == "" || siteKey == "" || pageURL == "" {
-		t.Skipf("KEY, SITE_KEY and PAGE_URL environment variables must be specified")
+	if err := env.Parse(&config); err != nil {
+		t.Skipf(err.Error())
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	config := &rucaptcha.Config{
-		Key:      key,
-		Pingback: os.Getenv("PINGBACK"),
-	}
-
-	client, err := rucaptcha.NewClient(based.StandardClock, config)
+	client, err := rucaptcha.ClientBuilder{
+		Config: rucaptcha.Config{
+			Key: config.Key,
+		},
+	}.Build(ctx)
 	require.NoError(t, err)
 
 	result, err := client.Solve(ctx, &rucaptcha.YandexSmartCaptchaIn{
-		SiteKey: siteKey,
-		PageURL: pageURL,
+		SiteKey: config.SiteKey,
+		PageURL: config.PageURL,
 	})
 
 	require.NoError(t, err)
 
-	t.Logf("Result: %s", result)
+	t.Logf("Result: %s", result.Answer)
 }
