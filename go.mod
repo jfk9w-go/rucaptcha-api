@@ -6,7 +6,7 @@ require (
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/google/go-querystring v1.1.0
-	github.com/jfk9w-go/based v0.0.0-20230616103937-58b81a6a9dd8
+	github.com/jfk9w-go/based v0.0.0-20230616110516-38f4c5c23679
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.2
 )
