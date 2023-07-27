@@ -5,8 +5,9 @@ import (
 	"testing"
 
 	"github.com/caarlos0/env"
-	"github.com/jfk9w-go/rucaptcha-api"
 	"github.com/stretchr/testify/require"
+
+	"github.com/jfk9w-go/rucaptcha-api"
 )
 
 func TestClient_Solve_Yandex(t *testing.T) {
