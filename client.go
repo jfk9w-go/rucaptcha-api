@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/go-querystring/query"
 	"github.com/jfk9w-go/based"
 	"github.com/pkg/errors"
