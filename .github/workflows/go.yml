@@ -1,6 +1,6 @@
-name: CI
+name: Go
 
-on: [ push, pull_request, workflow_dispatch ]
+on: [ push, pull_request_target, workflow_dispatch ]
 
 jobs:
   test:
@@ -12,14 +12,14 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: stable
-      - name: Build
-        run: make build
       - name: Lint
         uses: golangci/golangci-lint-action@v3
         with:
           version: latest
+      - name: Build
+        run: make build
       - name: Test
         run: make test
       - name: Update test coverage
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'push' && github.ref_type == 'tag'
         uses: ncruces/go-coverage-report@main

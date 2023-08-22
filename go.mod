@@ -1,12 +1,11 @@
 module github.com/jfk9w-go/rucaptcha-api
 
-go 1.20
+go 1.21
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
-	github.com/go-playground/validator/v10 v10.15.0
 	github.com/google/go-querystring v1.1.0
-	github.com/jfk9w-go/based v0.0.0-20230814155124-5395e1391762
+	github.com/jfk9w-go/based v0.0.2
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.4
 )
@@ -16,6 +15,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.15.1 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	golang.org/x/crypto v0.12.0 // indirect
