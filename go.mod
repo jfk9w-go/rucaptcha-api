@@ -2,6 +2,8 @@ module github.com/jfk9w-go/rucaptcha-api
 
 go 1.21
 
+toolchain go1.21.0
+
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
 	github.com/google/go-querystring v1.1.0
