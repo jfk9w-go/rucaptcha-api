@@ -29,7 +29,7 @@ type ClientBuilder struct {
 }
 
 func (b ClientBuilder) Build() (*Client, error) {
-	if err := based.Validate.Struct(b); err != nil {
+	if err := based.Validate(b); err != nil {
 		return nil, err
 	}
 
@@ -71,7 +71,7 @@ func (c *Client) HTTPHandler() http.Handler {
 }
 
 func (c *Client) Solve(ctx context.Context, in SolveIn) (*SolveOut, error) {
-	if err := based.Validate.Struct(in); err != nil {
+	if err := based.Validate(in); err != nil {
 		return nil, err
 	}
 
