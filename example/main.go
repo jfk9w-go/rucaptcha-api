@@ -23,11 +23,11 @@ func main() {
 		panic(err)
 	}
 
-	client, err := rucaptcha.ClientBuilder{
+	client, err := rucaptcha.NewClient(rucaptcha.ClientParams{
 		Config: rucaptcha.Config{
 			Key: config.Key,
 		},
-	}.Build()
+	})
 	if err != nil {
 		panic(err)
 	}
